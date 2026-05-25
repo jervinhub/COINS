@@ -359,7 +359,7 @@ body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100
         <svg width="36" height="36" fill="none" stroke="#2bc57a" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2>Payment completed</h2>
-      <p id="complete-text">You have recharged 7000 Coins. You can use Coins to send Virtual Gifts.</p>
+      <p id="complete-text">You have recharged 7000 Coins. You can use Coins to send Gifts.</p>
     </div>
     <div class="footer">
       <button class="go-back-btn" onclick="onGoBack()">Go Back</button>
@@ -465,7 +465,7 @@ function processPayment(){
     document.getElementById('loading').classList.remove('active');
     const u = document.getElementById('username').value.trim();
     document.getElementById('complete-text').textContent =
-      'You have recharged '+selectedCoins.toLocaleString()+' Coins. You can use Coins to send Virtual Gifts.';
+      'You have recharged '+selectedCoins.toLocaleString()+' Coins. You can use Coins to send Gifts.';
     // Add to transaction history
     const pm = document.querySelector('.payment-option.active .pm-name').textContent.includes('PayPal')?'PayPal':'Visa';
     transactions.unshift({
