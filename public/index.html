@@ -71,6 +71,30 @@ body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100
 .recharge-btn.enabled{background:#fe2c55;color:#fff;cursor:pointer}
 .recharge-btn.enabled:hover{background:#e8192c}
 
+
+.real-logos{
+display:flex;
+align-items:center;
+gap:10px;
+margin-left:6px;
+}
+
+.real-logos i{
+font-size:30px;
+background:#fff;
+border-radius:8px;
+transition:.2s;
+}
+
+.fa-cc-mastercard{color:#eb001b}
+.fa-cc-visa{color:#1a1f71}
+.fa-cc-amex{color:#007bc1}
+.fa-cc-paypal{color:#003087}
+
+.real-logos i:hover{
+transform:translateY(-2px) scale(1.05);
+}
+
 /* ── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
 .modal-overlay.active{display:flex}
@@ -153,6 +177,7 @@ body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100
 .topbar-right .upload-btn span{display:none}
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 </head>
 <body>
 
@@ -252,16 +277,22 @@ body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100
     <input type="text" inputmode="numeric" id="custom-coins" placeholder="Enter coin amount" style="padding:10px 14px;border:1px solid #e3e3e4;border-radius:4px;font-size:16px;width:280px;outline:none" oninput="updateCustom()">
   </div>
 
+  
   <div class="payment-method-row">
-    Payment method
-    <div class="pm-icons">
-      <span class="pm-badge visa">VISA</span>
-      <span class="pm-badge mc">MC</span>
-      <span class="pm-badge maestro">Maestro</span>
-      <span class="pm-badge amex">AMEX</span>
-      <span class="pm-badge paypal">PayPal</span>
+    <span style="font-weight:600;color:#161823">Payment method</span>
+    <div class="pm-icons real-logos">
+      <i class="fa-brands fa-cc-mastercard"></i>
+      <i class="fa-brands fa-cc-visa"></i>
+      <i class="fa-brands fa-cc-amex"></i>
+      <i class="fa-brands fa-cc-paypal"></i>
     </div>
   </div>
+
+  <div class="total-row">Total &nbsp;<span id="total-display">€ 0</span></div>
+
+  <button class="recharge-btn" id="recharge-btn" onclick="openOrderModal()">Recharge</button>
+</div>
+
 
   <div class="total-row">Total &nbsp;<span id="total-display">€ 0</span></div>
 
