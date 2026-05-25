@@ -249,7 +249,7 @@ body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100
   </div>
 
   <div id="custom-input-wrap" style="display:none;margin-bottom:18px">
-    <input type="number" id="custom-coins" placeholder="Enter coin amount" style="padding:10px 14px;border:1px solid #e3e3e4;border-radius:4px;font-size:16px;width:280px;outline:none" oninput="updateCustom()">
+    <input type="text" inputmode="numeric" id="custom-coins" placeholder="Enter coin amount" style="padding:10px 14px;border:1px solid #e3e3e4;border-radius:4px;font-size:16px;width:280px;outline:none" oninput="updateCustom()">
   </div>
 
   <div class="payment-method-row">
@@ -420,9 +420,24 @@ function selectCustom(el){
 }
 
 function updateCustom(){
-  const v = Number(document.getElementById('custom-coins').value)||0;
-  selectedCoins = v;
-  selectedPrice = Math.round(v * 0.01175 * 100)/100;
+  const input = document.getElementById('custom-coins');
+
+  let raw = input.value.replace(/,/g,'').replace(/[^\d]/g,'');
+
+  if(!raw){
+    selectedCoins = 0;
+    selectedPrice = 0;
+    input.value = '';
+    updateState();
+    return;
+  }
+
+  selectedCoins = Number(raw);
+
+  input.value = selectedCoins.toLocaleString();
+
+  selectedPrice = Math.round(selectedCoins * 0.01175 * 100)/100;
+
   updateState();
 }
 
