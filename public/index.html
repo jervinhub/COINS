@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TikTok – Get Coins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:#161823;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:#fff;border-bottom:1px solid #e3e3e4;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100}
+.topbar-logo{display:flex;align-items:center;gap:6px;text-decoration:none}
+.topbar-logo img.icon{width:34px;height:34px;object-fit:contain}
+.topbar-logo .wordmark{height:28px;object-fit:contain}
+.topbar-logo .wordmark-text{font-size:26px;font-weight:800;color:#161823;letter-spacing:-1px}
+.search-wrap{flex:1;max-width:360px;margin:0 auto}
+.search-wrap input{width:100%;background:#f1f1f2;border:none;border-radius:92px;padding:8px 16px 8px 38px;font-size:15px;outline:none;color:#161823}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#888}
+.topbar-right{display:flex;align-items:center;gap:14px;margin-left:auto}
+.upload-btn{display:flex;align-items:center;gap:6px;border:1.5px solid #e3e3e4;border-radius:4px;padding:7px 14px;font-size:15px;font-weight:600;cursor:pointer;color:#161823;background:#fff}
+.upload-btn:hover{background:#f1f1f2}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:#161823}
+.icon-btn .badge{position:absolute;top:2px;right:2px;background:#fe2c55;color:#fff;font-size:10px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;background:#161823;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+
+/* ── MAIN CONTENT ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── GET COINS PAGE ── */
+.coins-wrap{max-width:900px;margin:40px auto;padding:0 24px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:28px;font-weight:700}
+.view-history{font-size:15px;color:#161823;font-weight:600;cursor:pointer;text-decoration:none}
+.view-history:hover{text-decoration:underline}
+
+.user-field{display:flex;align-items:center;border:1px solid #e3e3e4;border-radius:4px;overflow:hidden;width:280px;margin-bottom:28px}
+.user-field input{flex:1;padding:10px 12px;border:none;font-size:16px;outline:none;color:#161823}
+.user-field .clear-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#aaa;flex-shrink:0}
+.user-field .clear-btn:hover{color:#666}
+
+.recharge-label{font-size:18px;font-weight:700;margin-bottom:18px}
+.packages-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.pkg{border:1.5px solid #e3e3e4;border-radius:8px;padding:20px 16px;cursor:pointer;transition:.15s;background:#fff;text-align:left}
+.pkg:hover{border-color:#bbb}
+.pkg.active{border-color:#fe2c55;background:#fff}
+.pkg .coin-icon{width:28px;height:28px;margin-bottom:8px}
+.pkg .coins-val{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.pkg .coins-val img{width:24px;height:24px}
+.pkg .coins-val svg{flex-shrink:0}
+.pkg .price{font-size:14px;color:#666;font-weight:400}
+.pkg.custom-pkg .coins-val{font-size:20px}
+
+.payment-method-row{display:flex;align-items:center;gap:8px;font-size:14px;color:#666;margin-bottom:18px}
+.payment-method-row .pm-icons{display:flex;gap:6px;align-items:center}
+.pm-badge{height:22px;border:1px solid #ddd;border-radius:3px;padding:2px 5px;font-size:11px;font-weight:700;display:flex;align-items:center;letter-spacing:.5px}
+.pm-badge.visa{color:#1a1f71}
+.pm-badge.mc{color:#eb001b}
+.pm-badge.paypal{color:#003087}
+.pm-badge.maestro{color:#0099df}
+.pm-badge.amex{color:#007bc1}
+
+.total-row{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500;margin-bottom:18px;color:#161823}
+.total-row span{font-weight:700}
+
+.recharge-btn{background:#e3e3e4;color:#aaa;border:none;padding:10px 28px;border-radius:4px;font-size:16px;font-weight:600;cursor:not-allowed;transition:.2s}
+.recharge-btn.enabled{background:#fe2c55;color:#fff;cursor:pointer}
+.recharge-btn.enabled:hover{background:#e8192c}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:560px;overflow:hidden}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f1f1f2}
+.modal-header h2{font-size:20px;font-weight:700}
+.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;color:#666}
+.modal-close:hover{background:#f1f1f2}
+.modal-body{padding:24px}
+.order-row{display:flex;justify-content:space-between;font-size:15px;padding:6px 0}
+.order-row.total{font-weight:700;border-top:1px solid #e3e3e4;margin-top:6px;padding-top:12px}
+.section-label{font-size:16px;font-weight:700;margin-top:22px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.manage-link{font-size:14px;color:#fe2c55;font-weight:600;cursor:pointer}
+.payment-option{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #e3e3e4;border-radius:8px;cursor:pointer;margin-bottom:10px;transition:.15s}
+.payment-option:hover{border-color:#bbb}
+.payment-option.active{border-color:#fe2c55}
+.payment-option input[type=radio]{accent-color:#fe2c55;width:18px;height:18px}
+.payment-option .pm-name{flex:1;font-size:15px;font-weight:500}
+.payment-option .pm-logo-wrap{display:flex;gap:6px;align-items:center}
+.visa-card,.mc-card{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;font-weight:800;letter-spacing:.5px}
+.visa-card{color:#1a1f71}
+.mc-card{color:#eb001b}
+.paypal-logo{font-size:14px;font-weight:800;color:#003087}
+.paypal-logo span{color:#009cde}
+
+.terms-check{display:flex;gap:10px;margin-top:18px;margin-bottom:0;padding:14px 0;border-top:1px solid #f1f1f2;font-size:13px;color:#555;line-height:1.5}
+.terms-check input[type=checkbox]{accent-color:#fe2c55;width:16px;height:16px;flex-shrink:0;margin-top:2px}
+.terms-check b{color:#161823}
+.country-text{font-weight:700;color:#161823}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:16px 24px;border-top:1px solid #f1f1f2}
+.help-btn{width:32px;height:32px;border:1.5px solid #ccc;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#666;font-size:15px;cursor:pointer;font-weight:700}
+.pay-now-btn{background:#fe2c55;color:#fff;border:none;padding:12px 32px;border-radius:4px;font-size:16px;font-weight:700;cursor:pointer}
+.pay-now-btn:hover{background:#e8192c}
+
+/* ── PAYMENT COMPLETE MODAL ── */
+.pay-complete-modal{background:#fff;border-radius:12px;width:100%;max-width:560px;overflow:hidden}
+.pay-complete-modal .modal-close-row{display:flex;justify-content:flex-end;padding:16px 20px 0}
+.pay-complete-modal .content{padding:30px 40px 0;text-align:center}
+.check-circle{width:72px;height:72px;border-radius:50%;background:#f1f1f2;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.check-circle svg{color:#2bc57a}
+.pay-complete-modal h2{font-size:22px;font-weight:700;margin-bottom:10px}
+.pay-complete-modal p{font-size:15px;color:#666;margin-bottom:0}
+.pay-complete-modal .footer{padding:24px 40px;display:flex;justify-content:flex-end;border-top:1px solid #f1f1f2;margin-top:24px}
+.go-back-btn{background:#fe2c55;color:#fff;border:none;padding:12px 32px;border-radius:4px;font-size:15px;font-weight:700;cursor:pointer}
+.go-back-btn:hover{background:#e8192c}
+
+/* ── TRANSACTION HISTORY PAGE ── */
+.tx-wrap{max-width:900px;margin:40px auto;padding:0 24px}
+.back-link{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:700;cursor:pointer;margin-bottom:20px;color:#161823;text-decoration:none}
+.back-link:hover{color:#555}
+.tx-note{font-size:14px;color:#666;margin-bottom:24px}
+.tx-note a{color:#fe2c55;text-decoration:none;font-weight:500}
+.tx-note a:hover{text-decoration:underline}
+.tx-table{width:100%;border-collapse:collapse}
+.tx-table th{text-align:left;padding:10px 14px;font-size:14px;color:#666;font-weight:500;border-bottom:1px solid #e3e3e4}
+.tx-table td{padding:14px 14px;font-size:14px;border-bottom:1px solid #f1f1f2;vertical-align:middle}
+.tx-table tr:last-child td{border-bottom:none}
+.coin-cell{display:flex;align-items:center;gap:8px;font-weight:600}
+.status-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;font-size:13px;font-weight:600}
+.status-badge.completed{background:#e8f7ef;color:#2bc57a}
+.status-badge.pending{background:#fff3e0;color:#ff9800}
+.user-link{color:#fe2c55;text-decoration:none}
+.user-link:hover{text-decoration:underline}
+.pm-cell{display:flex;align-items:center;gap:6px;font-size:14px}
+
+/* ── COIN ICON SVG ── */
+.tiktok-coin{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffb800);flex-shrink:0;font-size:11px}
+
+/* ── LOADING ── */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:300}
+.loading-overlay.active{display:flex}
+.spinner{width:48px;height:48px;border:4px solid #e3e3e4;border-top-color:#fe2c55;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:16px;font-weight:600;color:#161823}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+.packages-grid{grid-template-columns:repeat(2,1fr)}
+.topbar .search-wrap{display:none}
+.topbar-right .upload-btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="topbar-logo" href="#" onclick="showPage('coins');return false">
+    <!-- Try real logo files; fallback to SVG TikTok icon -->
+    <img class="icon" src="/tiktok-icon.png" onerror="this.style.display='none';document.getElementById('tt-svg').style.display='flex'" alt="">
+    <span id="tt-svg" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="34" height="34" rx="8" fill="#010101"/>
+        <path d="M23.6 8.4c-.8-1-1.3-2.2-1.3-3.4H18.5v14.3c-.1 1.6-1.5 2.9-3.1 2.9-1.7 0-3.1-1.4-3.1-3.1s1.4-3.1 3.1-3.1c.3 0 .6 0 .9.1V12c-.3 0-.6-.1-.9-.1C11.1 11.9 8 15 8 18.8s3.1 6.8 6.9 6.8 6.9-3 6.9-6.8V12.6c1.3.9 2.9 1.4 4.6 1.4V10.2c-1.1 0-2.1-.7-2.8-1.8z" fill="#FE2C55"/>
+        <path d="M23.6 8.4c-.8-1-1.3-2.2-1.3-3.4H18.5v14.3c-.1 1.6-1.5 2.9-3.1 2.9-1.7 0-3.1-1.4-3.1-3.1s1.4-3.1 3.1-3.1c.3 0 .6 0 .9.1V12c-.3 0-.6-.1-.9-.1C11.1 11.9 8 15 8 18.8s3.1 6.8 6.9 6.8 6.9-3 6.9-6.8V12.6c1.3.9 2.9 1.4 4.6 1.4V10.2c-1.1 0-2.1-.7-2.8-1.8z" fill="white" opacity=".15"/>
+      </svg>
+    </span>
+    <img class="wordmark" src="/tiktok-wordmark.png" onerror="this.style.display='none';document.getElementById('tt-text').style.display='block'" alt="TikTok">
+    <span id="tt-text" class="wordmark-text" style="display:none">TikTok</span>
+  </a>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Search">
+  </div>
+
+  <div class="topbar-right">
+    <button class="upload-btn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      <span>Upload</span>
+    </button>
+    <div class="icon-btn">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+    </div>
+    <div class="icon-btn">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="badge">4</div>
+    </div>
+    <div class="icon-btn">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div class="avatar">U</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ GET COINS PAGE ══════════════════════════════════ -->
+<div class="page active" id="page-coins">
+<div class="coins-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Get Coins</h1>
+    <a class="view-history" href="#" onclick="showPage('history');return false">View transaction history</a>
+  </div>
+
+  <div class="user-field">
+    <input type="text" id="username" placeholder="Enter username" oninput="updateState()">
+    <div class="clear-btn" onclick="clearUsername()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+    </div>
+  </div>
+
+  <div class="recharge-label">Recharge</div>
+
+  <div class="packages-grid">
+    <div class="pkg" data-coins="70" data-price="0.85" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 70</div>
+      <div class="price">€ 0.85</div>
+    </div>
+    <div class="pkg" data-coins="350" data-price="4.15" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 350</div>
+      <div class="price">€ 4.15</div>
+    </div>
+    <div class="pkg" data-coins="700" data-price="8.29" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 700</div>
+      <div class="price">€ 8.29</div>
+    </div>
+    <div class="pkg" data-coins="1400" data-price="16.49" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 1,400</div>
+      <div class="price">€ 16.49</div>
+    </div>
+    <div class="pkg" data-coins="3500" data-price="41.25" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 3,500</div>
+      <div class="price">€ 41.25</div>
+    </div>
+    <div class="pkg" data-coins="7000" data-price="82.09" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 7000</div>
+      <div class="price">€ 82.09</div>
+    </div>
+    <div class="pkg" data-coins="17500" data-price="205.18" onclick="selectPkg(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> 17,500</div>
+      <div class="price">€ 205.18</div>
+    </div>
+    <div class="pkg custom-pkg" onclick="selectCustom(this)">
+      <div class="coins-val"><span class="tiktok-coin">🪙</span> Custom</div>
+      <div class="price">Large amount supported</div>
+    </div>
+  </div>
+
+  <div id="custom-input-wrap" style="display:none;margin-bottom:18px">
+    <input type="number" id="custom-coins" placeholder="Enter coin amount" style="padding:10px 14px;border:1px solid #e3e3e4;border-radius:4px;font-size:16px;width:280px;outline:none" oninput="updateCustom()">
+  </div>
+
+  <div class="payment-method-row">
+    Payment method
+    <div class="pm-icons">
+      <span class="pm-badge visa">VISA</span>
+      <span class="pm-badge mc">MC</span>
+      <span class="pm-badge maestro">Maestro</span>
+      <span class="pm-badge amex">AMEX</span>
+      <span class="pm-badge paypal">PayPal</span>
+    </div>
+  </div>
+
+  <div class="total-row">Total &nbsp;<span id="total-display">€ 0</span></div>
+
+  <button class="recharge-btn" id="recharge-btn" onclick="openOrderModal()">Recharge</button>
+</div>
+</div>
+
+<!-- ══════════════════════════════════ TRANSACTION HISTORY PAGE ══════════════════════════════════ -->
+<div class="page" id="page-history">
+<div class="tx-wrap">
+  <a class="back-link" href="#" onclick="showPage('coins');return false">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    Transaction history
+  </a>
+  <div class="tx-note">This page only shows the transaction history of your Coins purchased through TikTok.com. <a href="#">View Terms of Purchase for Coins</a></div>
+
+  <table class="tx-table">
+    <thead>
+      <tr>
+        <th>Amount</th>
+        <th>Payment method</th>
+        <th>Payment</th>
+        <th>User</th>
+        <th>Date</th>
+        <th>Order ID</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tx-tbody">
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ══════════════════════════════════ ORDER SUMMARY MODAL ══════════════════════════════════ -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Order summary</h2>
+      <div class="modal-close" onclick="closeModal('order-modal')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="order-row"><span>Account</span><span id="om-account">—</span></div>
+      <div class="order-row"><span id="om-coins-label">— Coins</span><span id="om-price">€ 0.00</span></div>
+      <div class="order-row total"><span>Total</span><span id="om-total">€ 0.00</span></div>
+
+      <div class="section-label">
+        Select a payment method
+        <span class="manage-link">Manage</span>
+      </div>
+
+      <div class="payment-option active" onclick="selectPayment(this,'card')">
+        <input type="radio" name="payment" id="radio-card" checked>
+        <label class="pm-name" for="radio-card">Credit / debit card</label>
+        <div class="pm-logo-wrap">
+          <span class="visa-card">VISA</span>
+          <span class="mc-card">MC</span>
+          <span style="font-size:11px;border:1px solid #ddd;padding:2px 5px;border-radius:3px;color:#0099df;font-weight:700">Maestro</span>
+          <span style="font-size:11px;border:1px solid #ddd;padding:2px 5px;border-radius:3px;color:#007bc1;font-weight:700">AMEX</span>
+        </div>
+      </div>
+
+      <div class="payment-option" onclick="selectPayment(this,'paypal')">
+        <input type="radio" name="payment" id="radio-paypal">
+        <label class="pm-name" for="radio-paypal">PayPal</label>
+        <div class="pm-logo-wrap">
+          <span class="paypal-logo"><span style="color:#009cde">Pay</span>Pal</span>
+        </div>
+      </div>
+
+      <div class="terms-check">
+        <input type="checkbox" id="terms-check" checked>
+        <label for="terms-check">By ticking the box, I agree to the <b>Coins Policy</b> and request the immediate credit of Coins to my account. I acknowledge that I will lose my right of withdrawal once I have used the Coins, at which point the contract has been fully performed.<br><br>By continuing this purchase, you confirm that you live in <span class="country-text">France</span>.</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="help-btn">?</div>
+      <button class="pay-now-btn" onclick="processPayment()">Pay now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ PAYMENT COMPLETE MODAL ══════════════════════════════════ -->
+<div class="modal-overlay" id="complete-modal">
+  <div class="pay-complete-modal">
+    <div class="modal-close-row">
+      <div class="modal-close" onclick="closeModal('complete-modal')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div class="content">
+      <div class="check-circle">
+        <svg width="36" height="36" fill="none" stroke="#2bc57a" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Payment completed</h2>
+      <p id="complete-text">You have recharged 7000 Coins. You can use Coins to send Virtual Gifts.</p>
+    </div>
+    <div class="footer">
+      <button class="go-back-btn" onclick="onGoBack()">Go Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Processing payment…</div>
+</div>
+
+<script>
+// ── STATE ──
+let selectedCoins = 0;
+let selectedPrice = 0;
+let customMode = false;
+let transactions = [
+  {coins:7000,pm:'Visa',payment:'€ 82.09',user:'@user7',date:'2023-07-12',orderid:'10000017255394',status:'completed'},
+  {coins:7000,pm:'Visa',payment:'€ 82.09',user:'@hgff',date:'2023-07-10',orderid:'10000017255392',status:'completed'},
+  {coins:3500,pm:'Visa',payment:'€ 41.25',user:'@user6',date:'2023-07-10',orderid:'10000017255387',status:'completed'},
+  {coins:70,pm:'Visa',payment:'€ 0.85',user:'@terter',date:'2023-07-10',orderid:'10000017255386',status:'completed'},
+  {coins:17500,pm:'PayPal',payment:'€ 205.19',user:'@user4',date:'2023-07-10',orderid:'10000017255385',status:'completed'},
+  {coins:3500,pm:'Visa',payment:'€ 41.25',user:'@user3',date:'2023-07-10',orderid:'10000017255384',status:'completed'},
+  {coins:700,pm:'Visa',payment:'€ 8.29',user:'@user2',date:'2023-07-10',orderid:'10000017255383',status:'completed'},
+  {coins:7000,pm:'PayPal',payment:'€ 82.09',user:'@user1',date:'2023-07-10',orderid:'10000017255382',status:'completed'},
+];
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='history') renderTx();
+}
+
+function clearUsername(){
+  document.getElementById('username').value='';
+  updateState();
+}
+
+function selectPkg(el){
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  selectedCoins = Number(el.dataset.coins);
+  selectedPrice = Number(el.dataset.price);
+  customMode = false;
+  document.getElementById('custom-input-wrap').style.display='none';
+  updateState();
+}
+
+function selectCustom(el){
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  customMode = true;
+  selectedCoins = 0; selectedPrice = 0;
+  document.getElementById('custom-input-wrap').style.display='block';
+  updateState();
+}
+
+function updateCustom(){
+  const v = Number(document.getElementById('custom-coins').value)||0;
+  selectedCoins = v;
+  selectedPrice = Math.round(v * 0.01175 * 100)/100;
+  updateState();
+}
+
+function updateState(){
+  const u = document.getElementById('username').value.trim();
+  const btn = document.getElementById('recharge-btn');
+  document.getElementById('total-display').textContent = '€ ' + (selectedPrice||0).toFixed(selectedPrice>0?2:0);
+  if(u && selectedCoins>0){
+    btn.classList.add('enabled'); btn.disabled=false;
+  } else {
+    btn.classList.remove('enabled'); btn.disabled=true;
+  }
+}
+
+function openOrderModal(){
+  const u = document.getElementById('username').value.trim();
+  if(!u||!selectedCoins) return;
+  document.getElementById('om-account').textContent = u;
+  document.getElementById('om-coins-label').textContent = selectedCoins.toLocaleString()+' Coins';
+  document.getElementById('om-price').textContent = '€ '+selectedPrice.toFixed(2);
+  document.getElementById('om-total').textContent = '€ '+selectedPrice.toFixed(2);
+  document.getElementById('order-modal').classList.add('active');
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('active');
+}
+
+function selectPayment(el){
+  document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  el.querySelector('input[type=radio]').checked=true;
+}
+
+function processPayment(){
+  if(!document.getElementById('terms-check').checked){alert('Please agree to the Coins Policy.');return;}
+  closeModal('order-modal');
+  document.getElementById('loading').classList.add('active');
+  setTimeout(()=>{
+    document.getElementById('loading').classList.remove('active');
+    const u = document.getElementById('username').value.trim();
+    document.getElementById('complete-text').textContent =
+      'You have recharged '+selectedCoins.toLocaleString()+' Coins. You can use Coins to send Virtual Gifts.';
+    // Add to transaction history
+    const pm = document.querySelector('.payment-option.active .pm-name').textContent.includes('PayPal')?'PayPal':'Visa';
+    transactions.unshift({
+      coins:selectedCoins,pm,payment:'€ '+selectedPrice.toFixed(2),
+      user:'@'+u,date:new Date().toISOString().slice(0,10),
+      orderid:'1000001'+Math.floor(Math.random()*9000000+1000000),status:'completed'
+    });
+    document.getElementById('complete-modal').classList.add('active');
+  },2200);
+}
+
+function onGoBack(){
+  closeModal('complete-modal');
+  // reset
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('active'));
+  selectedCoins=0; selectedPrice=0;
+  document.getElementById('username').value='';
+  document.getElementById('custom-input-wrap').style.display='none';
+  updateState();
+}
+
+function renderTx(){
+  const tbody = document.getElementById('tx-tbody');
+  tbody.innerHTML = transactions.map(t=>`
+    <tr>
+      <td><div class="coin-cell"><span class="tiktok-coin">🪙</span>${t.coins.toLocaleString()}</div></td>
+      <td><div class="pm-cell">
+        ${t.pm==='PayPal'?
+          '<span style="font-size:13px;font-weight:800;color:#003087"><span style="color:#009cde">Pay</span>Pal</span>':
+          '<span class="visa-card" style="font-size:11px">VISA</span> <span style="font-size:13px;color:#666">'+t.pm+'</span>'}
+      </div></td>
+      <td>${t.payment}</td>
+      <td><a class="user-link" href="#">${t.user}</a></td>
+      <td>${t.date}</td>
+      <td style="font-size:13px;color:#666">${t.orderid}</td>
+      <td><span class="status-badge ${t.status}">${t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span></td>
+    </tr>
+  `).join('');
+}
+
+// init
+updateState();
+</script>
+</body>
+</html>
